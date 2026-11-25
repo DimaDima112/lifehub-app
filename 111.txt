@@ -1,0 +1,10 @@
+включить VITE
+
+cd C:\Users\dimad\lifehub-app
+npm run dev
+
+в гит 
+
+cd ~/lifehub-app
+pwd
+ls
