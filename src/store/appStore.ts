@@ -15,6 +15,7 @@ interface AppState {
   deleteTopic: (id: string) => void;
 
   addTask: (t: Omit<Task, 'id'>) => void;
+  addQuickTask: (topicId: string, title: string, date: string) => void;
   updateTask: (id: string, patch: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   toggleTask: (id: string) => void;
@@ -87,6 +88,7 @@ export const useStore = create<AppState>()(
         })),
 
       addTask: (t) => set((s) => ({ tasks: [...s.tasks, { ...t, id: uid() }] })),
+      addQuickTask: (topicId, title, date) => set((s) => ({ tasks: [...s.tasks, { id: uid(), topicId, title, done: false, dueDate: date, subtasks: [], attachments: [] }] })),
       updateTask: (id, patch) =>
         set((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...patch } : t)) })),
       deleteTask: (id) => set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) })),

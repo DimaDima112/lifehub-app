@@ -8,10 +8,15 @@ const today = () => new Date().toISOString().slice(0, 10);
 const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
 export default function Dashboard() {
-  const { topics, tasks, toggleTask } = useStore();
+  const { topics, tasks, toggleTask, addQuickTask } = useStore();
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  
+  // Состояние для быстрого добавления
+  const [showAdd, setShowAdd] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newTopicId, setNewTopicId] = useState('');
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -27,6 +32,13 @@ export default function Dashboard() {
   while (cells.length % 7 !== 0) cells.push(null);
 
   const weekdays = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+
+  const handleAddTask = () => {
+    if (!newTitle.trim() || !newTopicId || !selectedDate) return;
+    addQuickTask(newTopicId, newTitle.trim(), selectedDate);
+    setNewTitle('');
+    setShowAdd(false); // Скрываем форму после добавления
+  };
 
   return (
     <div className="p-2 h-[calc(100vh-4rem)] flex flex-col">
@@ -48,7 +60,7 @@ export default function Dashboard() {
           const dayTasks = tasks.filter(t => t.dueDate === dateStr);
 
           return (
-            <div key={i} onClick={() => setSelectedDate(dateStr)}
+            <div key={i} onClick={() => { setSelectedDate(dateStr); setShowAdd(false); }}
               className={`border rounded-sm p-0.5 flex flex-col overflow-hidden cursor-pointer
                 ${isToday ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'}`}>
               <span className={`text-[10px] font-bold leading-none mb-0.5 ${isToday ? 'text-blue-600' : 'text-gray-700 dark:text-gray-300'}`}>{d}</span>
@@ -73,31 +85,68 @@ export default function Dashboard() {
 
       {selectedDate && (
         <div className="fixed inset-0 bg-black/50 z-[60] flex items-end justify-center" onClick={() => setSelectedDate(null)}>
-          <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-t-2xl p-4 max-h-[70vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <div className="bg-white dark:bg-slate-800 w-full max-w-md rounded-t-2xl p-4 max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg font-bold">{selectedDate}</h2>
               <button onClick={() => setSelectedDate(null)} className="text-gray-500 text-2xl leading-none">&times;</button>
             </div>
-            {tasks.filter(t => t.dueDate === selectedDate).length === 0 ? (
-              <p className="text-gray-500 text-sm text-center py-4">Нет задач</p>
-            ) : (
-              <div className="space-y-1.5">
-                {tasks.filter(t => t.dueDate === selectedDate).map(t => {
-                  const topic = topics.find(tp => tp.id === t.topicId);
-                  return (
-                    <div key={t.id} className="flex items-center gap-2 p-2 border rounded-lg dark:border-slate-600">
-                      <input type="checkbox" checked={t.done} onChange={() => toggleTask(t.id)} className="w-5 h-5 shrink-0" />
-                      <span className={`flex-1 text-sm ${t.done ? 'line-through opacity-60' : ''}`}>{t.title}</span>
-                      {topic && <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: colorMap[topic.color].hex + '30', color: colorMap[topic.color].hex }}>{topic.name}</span>}
-                    </div>
-                  );
-                })}
+
+            <div className="flex-1 overflow-y-auto mb-4">
+              {tasks.filter(t => t.dueDate === selectedDate).length === 0 && !showAdd ? (
+                <p className="text-gray-500 text-sm text-center py-4">Нет задач</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {tasks.filter(t => t.dueDate === selectedDate).map(t => {
+                    const topic = topics.find(tp => tp.id === t.topicId);
+                    return (
+                      <div key={t.id} className="flex items-center gap-2 p-2 border rounded-lg dark:border-slate-600">
+                        <input type="checkbox" checked={t.done} onChange={() => toggleTask(t.id)} className="w-5 h-5 shrink-0" />
+                        <span className={`flex-1 text-sm ${t.done ? 'line-through opacity-60' : ''}`}>{t.title}</span>
+                        {topic && <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: colorMap[topic.color].hex + '30', color: colorMap[topic.color].hex }}>{topic.name}</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Форма быстрого добавления */}
+              {showAdd && (
+                <div className="mt-3 p-3 bg-gray-50 dark:bg-slate-700 rounded-lg space-y-2 border dark:border-slate-600">
+                  <input 
+                    autoFocus
+                    className="w-full border rounded px-3 py-2 text-sm" 
+                    placeholder="Название задачи..." 
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
+                  />
+                  <select 
+                    className="w-full border rounded px-2 py-2 text-sm"
+                    value={newTopicId}
+                    onChange={(e) => setNewTopicId(e.target.value)}
+                  >
+                    <option value="">Выберите тему...</option>
+                    {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  </select>
+                  <div className="flex gap-2">
+                    <button className="flex-1 bg-blue-600 text-white py-2 rounded text-sm" onClick={handleAddTask}>Добавить</button>
+                    <button className="px-3 py-2 border rounded text-sm text-gray-500" onClick={() => setShowAdd(false)}>Отмена</button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {!showAdd && (
+              <div className="space-y-2">
+                <button onClick={() => setShowAdd(true)} className="w-full bg-green-600 text-white py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-1">
+                  <span className="text-lg">+</span> Добавить задачу
+                </button>
+                <button onClick={() => { navigate(`/planner/${selectedDate}`); setSelectedDate(null); }}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium text-sm">
+                  Открыть планер
+                </button>
               </div>
             )}
-            <button onClick={() => { navigate(`/planner/${selectedDate}`); setSelectedDate(null); }}
-              className="mt-4 w-full bg-blue-600 text-white py-3 rounded-lg font-medium text-sm">
-              Открыть планер
-            </button>
           </div>
         </div>
       )}
