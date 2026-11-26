@@ -2,13 +2,13 @@
   command = "npm run build"
   publish = "dist"
 
-# 1. Исключаем sw.js из общего редиректа
+# 1. Исключаем Service Worker из общего редиректа
 [[redirects]]
   from = "/sw.js"
   to = "/sw.js"
   status = 200
 
-# 2. Исключаем workbox из общего редиректа
+# 2. Исключаем скрипты Workbox
 [[redirects]]
   from = "/workbox-*.js"
   to = "/workbox-*.js"
@@ -20,7 +20,7 @@
   to = "/manifest.webmanifest"
   status = 200
 
-# 4. Все остальные пути отдают index.html для работы React Router
+# 4. Все остальные пути (для React Router) отдают index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
