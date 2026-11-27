@@ -49,75 +49,66 @@ export default function Finance() {
   };
 
   return (
-    <div className="p-3">
-      <h1 className="text-xl font-bold mb-3">Финансы</h1>
+    <div className="p-4 pb-24">
+      <h1 className="text-2xl font-bold mb-4 text-main tracking-tight">Финансы</h1>
 
-      <div className="flex gap-1 mb-3 text-sm">
+      <div className="flex gap-1 mb-4 neo-inset p-1 rounded-xl">
         {(['day', 'month', 'year'] as const).map((p) => (
           <button key={p} onClick={() => setPeriod(p)}
-            className={`flex-1 px-2 py-1.5 rounded-lg ${period === p ? 'bg-gray-800 text-white' : 'bg-gray-200 dark:bg-slate-700'}`}>
+            className={`flex-1 px-2 py-1.5 text-sm font-bold rounded-lg transition-all ${period === p ? 'neo-raised text-main' : 'text-muted'}`}>
             {p === 'day' ? 'День' : p === 'month' ? 'Месяц' : 'Год'}
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-1.5 mb-3">
-        <div className="bg-green-100 border border-green-400 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-green-700">Доход</p>
-          <p className="font-bold text-green-700 text-xs leading-tight break-all">{fmtMoney(income)}</p>
+      <div className="grid grid-cols-3 gap-2 mb-5">
+        <div className="neo-raised p-3 text-center border-t-2 border-t-green-500">
+          <p className="text-[10px] text-muted uppercase font-bold">Доход</p>
+          <p className="font-bold text-green-600 text-sm mt-1 break-all">{fmtMoney(income)}</p>
         </div>
-        <div className="bg-red-100 border border-red-400 rounded-lg p-2 text-center">
-          <p className="text-[10px] text-red-700">Расход</p>
-          <p className="font-bold text-red-700 text-xs leading-tight break-all">{fmtMoney(expense)}</p>
+        <div className="neo-raised p-3 text-center border-t-2 border-t-red-500">
+          <p className="text-[10px] text-muted uppercase font-bold">Расход</p>
+          <p className="font-bold text-red-600 text-sm mt-1 break-all">{fmtMoney(expense)}</p>
         </div>
-        <div className={`${balance >= 0 ? 'bg-blue-100 border-blue-400' : 'bg-orange-100 border-orange-400'} border rounded-lg p-2 text-center`}>
-          <p className="text-[10px]">Баланс</p>
-          <p className="font-bold text-xs leading-tight break-all">{fmtMoney(balance)}</p>
+        <div className="neo-raised p-3 text-center border-t-2 border-t-blue-500">
+          <p className="text-[10px] text-muted uppercase font-bold">Баланс</p>
+          <p className="font-bold text-main text-sm mt-1 break-all">{fmtMoney(balance)}</p>
         </div>
       </div>
 
-      <div className="space-y-1.5 mb-3 border rounded-lg p-2 bg-gray-50 dark:bg-slate-800">
-        <div className="flex gap-1.5">
-          <select className="border rounded-lg px-2 py-1.5 text-sm" value={type}
-            onChange={(e) => setType(e.target.value as 'income' | 'expense')}>
+      <div className="neo-inset p-4 mb-6 space-y-3">
+        <p className="text-sm font-bold text-main uppercase tracking-wide">Добавить запись</p>
+        <div className="flex gap-2">
+          <select className="neo-inset px-2 py-2 text-sm bg-white dark:bg-slate-800" value={type} onChange={(e) => setType(e.target.value as 'income' | 'expense')}>
             <option value="income">Доход</option>
             <option value="expense">Расход</option>
           </select>
-          <input className="flex-1 border rounded-lg px-2 py-1.5 text-sm min-w-0" placeholder="Сумма" type="number" value={amount}
-            onChange={(e) => setAmount(e.target.value)} />
+          <input className="flex-1 min-w-0 neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Сумма" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <input className="w-[120px] neo-inset px-2 py-2 text-sm bg-white dark:bg-slate-800" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
-        <input className="w-full border rounded-lg px-2 py-1.5 text-sm" type="date" value={date}
-          onChange={(e) => setDate(e.target.value)} />
-        <input className="w-full border rounded-lg px-2 py-1.5 text-sm"
-          placeholder={type === 'income' ? 'Источник' : 'Куда'}
-          value={source} onChange={(e) => setSource(e.target.value)} />
-        <div className="flex gap-1.5">
-          <input className="flex-1 border rounded-lg px-2 py-1.5 text-sm min-w-0" placeholder="Категория"
-            value={category} onChange={(e) => setCategory(e.target.value)} />
-          <button className="bg-blue-600 text-white px-4 rounded-lg text-sm" onClick={submit}>+</button>
+        <input className="w-full neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder={type === 'income' ? 'Источник' : 'Куда'} value={source} onChange={(e) => setSource(e.target.value)} />
+        <div className="flex gap-2">
+          <input className="flex-1 neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Категория" value={category} onChange={(e) => setCategory(e.target.value)} />
+          <button className="neo-accent px-5 rounded-lg text-lg" onClick={submit}>+</button>
         </div>
       </div>
 
       <FinanceChart entries={finances} year={year} />
 
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="font-semibold text-sm">Записи ({inPeriod.length})</h2>
-        <button className="text-xs bg-green-600 text-white px-2 py-1 rounded-lg"
-          onClick={() => exportCSV(inPeriod)}>⬇ CSV</button>
+      <div className="flex items-center justify-between mb-3 mt-6">
+        <h2 className="font-bold text-sm text-main uppercase tracking-wide">Записи ({inPeriod.length})</h2>
+        <button className="neo-btn text-xs px-3 py-1.5 font-bold text-green-600" onClick={() => exportCSV(inPeriod)}>⬇ CSV</button>
       </div>
-      <div className="space-y-1">
-        {inPeriod.length === 0 && <p className="text-gray-500 text-sm text-center py-3">Записей нет</p>}
+      <div className="space-y-2">
+        {inPeriod.length === 0 && <p className="text-muted text-sm text-center py-4">Записей нет</p>}
         {[...inPeriod].sort((a, b) => b.date.localeCompare(a.date)).map((f) => (
-          <div key={f.id} className="flex items-center gap-1.5 p-2 border rounded-lg text-xs">
-            <span className="text-gray-500 shrink-0">{f.date.slice(5)}</span>
-            <span className={`shrink-0 ${f.type === 'income' ? 'text-green-700' : 'text-red-700'}`}>
-              {f.type === 'income' ? '+' : '−'}
+          <div key={f.id} className="flex items-center gap-3 p-3 neo-raised text-sm">
+            <span className="text-[10px] font-bold text-muted w-12 shrink-0">{f.date.slice(5)}</span>
+            <span className={`flex-1 font-medium truncate ${f.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>{f.source}</span>
+            <span className={`font-bold shrink-0 ${f.type === 'income' ? 'text-green-600' : 'text-red-600'}`}>
+              {f.type === 'income' ? '+' : '−'}{f.amount.toLocaleString('ru-RU')}
             </span>
-            <span className="flex-1 truncate">{f.source}</span>
-            <span className={`font-semibold shrink-0 ${f.type === 'income' ? 'text-green-700' : 'text-red-700'}`}>
-              {f.amount.toLocaleString('ru-RU')}
-            </span>
-            <button className="text-red-600 shrink-0" onClick={() => deleteFinance(f.id)}>✕</button>
+            <button className="text-muted hover:text-red-500 w-7 h-7 flex items-center justify-center neo-btn" onClick={() => deleteFinance(f.id)}>✕</button>
           </div>
         ))}
       </div>
