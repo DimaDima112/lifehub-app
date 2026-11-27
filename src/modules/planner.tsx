@@ -54,6 +54,21 @@ export default function Planner() {
   const activeTasks = dayTasks.filter((t) => !t.done);
   const activeWorkouts = dayWorkouts.filter((w) => !w.done);
 
+  const getStreak = (h: any) => {
+    let streak = 0;
+    let d = new Date(date);
+    while (true) {
+      const dStr = d.toISOString().slice(0, 10);
+      if ((h.logs[dStr] ?? 0) > 0) {
+        streak++;
+        d.setDate(d.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+    return streak;
+  };
+
   const shiftDay = (delta: number) => {
     const d = new Date(date);
     d.setDate(d.getDate() + delta);
@@ -76,7 +91,6 @@ export default function Planner() {
       notes: editNotes.trim() || undefined,
       priority: editPriority || undefined,
     });
-    // Обновляем локальный стейт, чтобы модалка сразу показала новые данные
     setSelectedTask({
       ...selectedTask,
       title: editTitle.trim(),
@@ -91,7 +105,6 @@ export default function Planner() {
   const handleAddSub = () => {
     if (!selectedTask || !newSub.trim()) return;
     addSubtask(selectedTask.id, newSub.trim());
-    // Обновляем локально для мгновенного отображения
     const updatedSubs = [...selectedTask.subtasks, { id: Date.now().toString(), title: newSub.trim(), done: false }];
     setSelectedTask({ ...selectedTask, subtasks: updatedSubs });
     setNewSub('');
@@ -111,6 +124,20 @@ export default function Planner() {
       <div className="flex justify-center mb-4">
         <button className="text-xs neo-btn px-3 py-1 text-muted" onClick={() => navigate('/planner')}>на сегодня</button>
       </div>
+      
+      <ProgressBar done={dayTasks.filter(t => t.done).length + dayWorkouts.filter(w => w.done).length} total={dayTasks.length + dayWorkouts.length} />
+
+      {/* Трекер настроения */}
+      <div className="flex justify-between items-center mb-4 mt-2">
+        <p className="text-xs font-bold text-muted uppercase tracking-wide">Настроение на день</p>
+        <div className="flex gap-2">
+          {(['sad', 'neutral', 'happy'] as const).map(m => (
+            <button key={m} onClick={() => setMood(date, m)} className={`w-10 h-10 rounded-full text-xl neo-btn ${moods[date] === m ? 'neo-primary ring-2 ring-blue-400' : ''}`}>
+              {m === 'sad' ? '😞' : m === 'neutral' ? '😐' : '😃'}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <h2 className="font-bold text-sm mb-2 text-main uppercase tracking-wide">Привычки</h2>
       <HabitChart habits={habits} date={date} />
@@ -118,11 +145,12 @@ export default function Planner() {
         {habits.map((h) => {
           const c = colorMap[h.color];
           const count = h.logs[date] ?? 0;
+          const streak = getStreak(h);
           return (
             <div key={h.id} className="flex items-center gap-2 p-2 neo-raised">
-              <span className="flex-1 font-medium text-sm" style={{ color: c.hex }}>
-                {h.name}
-                {getStreak(h) > 1 && <span className="ml-2 text-xs font-bold text-orange-500 bg-orange-100 px-1.5 py-0.5 rounded">🔥 {getStreak(h)}</span>}
+              <span className="flex-1 font-medium text-sm flex flex-col justify-center" style={{ color: c.hex }}>
+                <span>{h.name}</span>
+                {streak > 1 && <span className="text-[10px] text-orange-500 font-bold">🔥 {streak} дней подряд</span>}
               </span>
               <button className="w-8 h-8 neo-btn rounded-md flex items-center justify-center text-lg" onClick={() => logHabit(h.id, date, -1)}>−</button>
               <span className="w-6 text-center font-bold text-sm">{count}</span>
@@ -182,7 +210,7 @@ export default function Planner() {
           <div className="neo-raised w-full max-w-sm rounded-xl p-5" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold mb-4 text-main">Новая задача на {date}</h3>
             <div className="flex gap-2 mb-3">
-              <input autoFocus className="flex-1 neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Название задачи..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddTask()} />
+              <input autoFocus className="flex-1 min-w-0 neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Название задачи..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddTask()} />
               <VoiceInput onResult={(text) => setNewTitle(text)} />
             </div>
             <select className="w-full neo-inset px-3 py-2 text-sm mb-4 bg-white dark:bg-slate-800" value={newTopicId} onChange={(e) => setNewTopicId(e.target.value)}>
@@ -201,7 +229,6 @@ export default function Planner() {
       {selectedTask && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-end justify-center" onClick={() => setSelectedTask(null)}>
           <div className="neo-raised w-full max-w-md rounded-t-2xl p-5 max-h-[90vh] flex flex-col rounded-b-none border-b-0" onClick={e => e.stopPropagation()}>
-            
             <div className="flex justify-between items-start mb-4">
               <div className="flex-1 min-w-0">
                 {isEditing ? (
@@ -215,8 +242,6 @@ export default function Planner() {
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-4 pr-1">
-              
-              {/* Кнопки управления: Выполнено / Редактировать / Удалить */}
               {!isEditing && (
                 <div className="flex gap-2 flex-wrap">
                   <button className={`flex-1 py-2 rounded-lg text-sm font-medium ${selectedTask.done ? 'neo-btn text-green-600' : 'neo-primary'}`} onClick={() => { toggleTask(selectedTask.id); setSelectedTask(null); }}>
@@ -227,7 +252,6 @@ export default function Planner() {
                 </div>
               )}
 
-              {/* РЕЖИМ РЕДАКТИРОВАНИЯ */}
               {isEditing && (
                 <div className="neo-inset p-3 space-y-3 mb-2">
                   <div>
@@ -260,7 +284,6 @@ export default function Planner() {
                 </div>
               )}
 
-              {/* ПРОСМОТР ДАННЫХ (когда не редактируем) */}
               {!isEditing && (
                 <>
                   {selectedTask.priority && (
