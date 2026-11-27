@@ -35,6 +35,9 @@ interface AppState {
 
   addIdea: (i: Omit<Idea, 'id'>) => void;
   updateIdea: (id: string, patch: Partial<Idea>) => void;
+  updateIdeaInfo: (id: string, title: string, desc: string, topicId: string) => void;
+  addIdeaComment: (ideaId: string, text: string) => void;
+  deleteIdeaComment: (ideaId: string, commentId: string) => void;
   deleteIdea: (id: string) => void;
   addIdeaPhoto: (id: string, url: string) => void;
   deleteIdeaPhoto: (id: string, index: number) => void;
