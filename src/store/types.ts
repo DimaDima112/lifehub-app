@@ -73,6 +73,8 @@ export interface Workout {
   date: string;
   slot: 'morning' | 'day' | 'evening';
   plan: string;
+  sets?: number;
+  reps?: number;
   done: boolean;
   progressPhoto?: string;
 }
@@ -91,8 +93,14 @@ export interface Template {
   items: TemplateItem[];
 }
 
+export interface WorkoutExercise {
+  name: string;
+  sets: number;
+  reps: number;
+}
+
 export interface WorkoutTemplate {
   id: string;
   name: string;
-  exercises: string[];
+  exercises: WorkoutExercise[];
 }
