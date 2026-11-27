@@ -36,11 +36,11 @@ interface AppState {
   addIdea: (i: Omit<Idea, 'id'>) => void;
   updateIdea: (id: string, patch: Partial<Idea>) => void;
   updateIdeaInfo: (id: string, title: string, desc: string, topicId: string) => void;
-  addIdeaComment: (ideaId: string, text: string) => void;
-  deleteIdeaComment: (ideaId: string, commentId: string) => void;
   deleteIdea: (id: string) => void;
   addIdeaPhoto: (id: string, url: string) => void;
   deleteIdeaPhoto: (id: string, index: number) => void;
+  addIdeaComment: (ideaId: string, text: string) => void;
+  deleteIdeaComment: (ideaId: string, commentId: string) => void;
 
   addFinance: (f: Omit<FinanceEntry, 'id'>) => void;
   deleteFinance: (id: string) => void;
@@ -160,15 +160,31 @@ export const useStore = create<AppState>()(
           }),
         })),
 
-      addIdea: (i) => set((s) => ({ ideas: [...s.ideas, { ...i, id: uid() }] })),
+      addIdea: (i) => set((s) => ({ ideas: [...s.ideas, { ...i, id: uid(), comments: i.comments || [] }] })),
       updateIdea: (id, patch) =>
         set((s) => ({ ideas: s.ideas.map((i) => (i.id === id ? { ...i, ...patch } : i)) })),
+      updateIdeaInfo: (id, title, desc, topicId) =>
+        set((s) => ({ ideas: s.ideas.map((i) => (i.id === id ? { ...i, title, description: desc, topicId } : i)) })),
       deleteIdea: (id) => set((s) => ({ ideas: s.ideas.filter((i) => i.id !== id) })),
       addIdeaPhoto: (id, url) =>
         set((s) => ({ ideas: s.ideas.map((i) => (i.id === id ? { ...i, photos: [...i.photos, url] } : i)) })),
       deleteIdeaPhoto: (id, index) =>
         set((s) => ({
           ideas: s.ideas.map((i) => (i.id === id ? { ...i, photos: i.photos.filter((_, idx) => idx !== index) } : i)),
+        })),
+      addIdeaComment: (ideaId, text) =>
+        set((s) => ({
+          ideas: s.ideas.map((i) =>
+            i.id === ideaId
+              ? { ...i, comments: [...(i.comments || []), { id: uid(), text, date: new Date().toISOString().slice(0, 10) }] }
+              : i
+          ),
+        })),
+      deleteIdeaComment: (ideaId, commentId) =>
+        set((s) => ({
+          ideas: s.ideas.map((i) =>
+            i.id === ideaId ? { ...i, comments: (i.comments || []).filter((c) => c.id !== commentId) } : i
+          ),
         })),
 
       addFinance: (f) => set((s) => ({ finances: [...s.finances, { ...f, id: uid() }] })),
@@ -199,6 +215,6 @@ export const useStore = create<AppState>()(
         set((s) => ({ tasks: [...s.tasks, ...newTasks] }));
       },
     }),
-    { name: 'lifehub-v10' }
+    { name: 'lifehub-v11' }
   )
 );

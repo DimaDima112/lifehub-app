@@ -32,6 +32,12 @@ export interface Habit {
   logs: Record<string, number>;
 }
 
+export interface IdeaComment {
+  id: string;
+  text: string;
+  date: string;
+}
+
 export interface Idea {
   id: string;
   topicId: string;
@@ -40,6 +46,7 @@ export interface Idea {
   status: 'success' | 'fail' | 'pending';
   photos: string[];
   date: string;
+  comments?: IdeaComment[];
 }
 
 export interface FinanceEntry {
@@ -68,12 +75,6 @@ export interface Workout {
   plan: string;
   done: boolean;
   progressPhoto?: string;
-}
-
-export interface ProgressPhoto {
-  id: string;
-  date: string;
-  url: string;
 }
 
 export type Recurrence = 'none' | 'daily' | 'weekly' | 'monthly';
