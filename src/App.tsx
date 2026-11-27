@@ -21,8 +21,8 @@ import Hotkeys from './components/Hotkeys';
 export default function App() {
   return (
     <HashRouter>
-      <div className="min-h-screen bg-gray-100 dark:bg-black flex justify-center">
-        <div className="w-full max-w-md bg-white dark:bg-slate-900 min-h-screen relative shadow-xl overflow-x-hidden">
+      <div className="min-h-screen neo-base flex justify-center">
+        <div className="w-full max-w-md min-h-screen relative overflow-x-hidden">
           <ScrollToTop />
           <Toast />
           <ReminderBanner />

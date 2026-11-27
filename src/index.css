@@ -2,54 +2,102 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* --- БАЗОВЫЕ НАСТРОЙКИ --- */
 html, body { 
   transition: background 0.25s, color 0.25s;
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* --- СВЕТЛАЯ ТЕМА --- */
-:root { --accent: #2563eb; }
-html.accent-green { --accent: #16a34a; }
-html.accent-purple { --accent: #9333ea; }
-html.accent-orange { --accent: #ea580c; }
-.bg-blue-600 { background: var(--accent) !important; }
-.text-blue-600 { color: var(--accent) !important; }
-
-/* --- ТЕМНАЯ ТЕМА --- */
-html.dark body { background: #0f172a; color: #e2e8f0; }
-
-/* Фоны карточек */
-html.dark .bg-white { background: #1e293b; }
-html.dark .bg-gray-50 { background: #1e293b; }
-html.dark .bg-gray-100 { background: #334155; }
-html.dark .bg-gray-200 { background: #334155; }
-
-/* Границы */
-html.dark .border { border-color: #334155; }
-html.dark .border-gray-100 { border-color: #334155; }
-html.dark .border-gray-200 { border-color: #334155; }
-
-/* Текст */
-html.dark .text-gray-500 { color: #94a3b8; }
-html.dark .text-gray-600 { color: #cbd5e1; }
-html.dark .text-gray-700 { color: #e2e8f0; }
-html.dark .text-gray-800 { color: #f1f5f9; }
-
-/* Поля ввода */
-html.dark input, html.dark textarea, html.dark select {
-  background: #1e293b; 
-  color: #e2e8f0; 
-  border-color: #475569;
+/* --- СВЕТЛАЯ ТЕМА (Neo-Skeuo) --- */
+:root { 
+  --bg-main: #f2f4f7;
+  --surface-raised: #ffffff;
+  --surface-inset: #e9ecef;
+  --border-color: #cbd5e1;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --accent: #3b82f6; 
 }
 
-/* Цветные бейджи тем в темноте (делаем чуть темнее, чтобы не резали глаз) */
-html.dark .bg-blue-100 { background: #1e3a8a; color: #bfdbfe; }
-html.dark .bg-green-100 { background: #14532d; color: #bbf7d0; }
-html.dark .bg-red-100 { background: #7f1d1d; color: #fecaca; }
-html.dark .bg-yellow-100 { background: #78350f; color: #fef08a; }
-html.dark .bg-purple-100 { background: #4c1d95; color: #e9d5ff; }
-html.dark .bg-orange-100 { background: #7c2d12; color: #fed7aa; }
+body { background-color: var(--bg-main); color: var(--text-main); }
+
+/* --- ТЕМНАЯ ТЕМА (Neo-Skeuo) --- */
+html.dark { 
+  --bg-main: #0f172a;
+  --surface-raised: #1e293b;
+  --surface-inset: #0b1120;
+  --border-color: #334155;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+}
+html.dark body { background-color: var(--bg-main); color: var(--text-main); }
+
+/* --- КОМПОНЕНТЫ ИЗ РЕФЕРЕНСА --- */
+
+/* 1. Base Surface (Базовый фон) */
+.neo-base { background-color: var(--bg-main); }
+
+/* 2. Raised Surface (Карточки, приподнятые элементы) */
+.neo-raised {
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04);
+}
+html.dark .neo-raised {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* 3. Inset Surface (Поля ввода, вдавленные области) */
+.neo-inset {
+  background-color: var(--surface-inset);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+html.dark .neo-inset {
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* 4. Pressed Surface / Buttons (Кнопки) */
+.neo-button {
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  transition: all 0.1s ease;
+}
+.neo-button:active {
+  background-color: var(--surface-inset);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+  transform: translateY(1px);
+}
+
+/* 5. Primary Button (Акцентная кнопка) */
+.neo-primary {
+  background-color: var(--accent);
+  color: white;
+  border: 1px solid #2563eb;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(37,99,235,0.2);
+  transition: all 0.1s ease;
+}
+.neo-primary:active {
+  background-color: #2563eb;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Утилиты для текста */
+.text-main { color: var(--text-main); }
+.text-muted { color: var(--text-muted); }
+
+/* Сброс стандартных стилей инпутов */
+input, textarea, select {
+  background: transparent;
+  outline: none;
+}
