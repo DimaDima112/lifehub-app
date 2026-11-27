@@ -51,12 +51,12 @@ export default function Topics() {
               className={`flex items-center justify-between p-4 rounded-lg border ${c.bg} ${c.border}`}
             >
               <a href={`#/topic/${t.id}`} className={`font-semibold ${c.text} flex-1`}>
-                {t.name}
+                <span className="truncate block">{t.name}</span>
                 <span className="ml-2 text-sm opacity-70">({done}/{total.length})</span>
               </a>
               <button
                 className="text-red-600 text-sm"
-                onClick={() => confirm(`Удалить тему "${t.name}"?`) && deleteTopic(t.id)}
+                onClick={() => confirm(`Удалить тему "$<span className="truncate block">{t.name}</span>"?`) && deleteTopic(t.id)}
               >
                 ✕
               </button>

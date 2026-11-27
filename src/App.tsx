@@ -15,7 +15,6 @@ import BottomNav from './components/BottomNav';
 import ReminderBanner from './components/ReminderBanner';
 import Toast from './components/Toast';
 import ScrollToTop from './components/ScrollToTop';
-import Fab from './components/Fab';
 import GlobalSearch from './components/GlobalSearch';
 import Hotkeys from './components/Hotkeys';
 
@@ -45,7 +44,6 @@ export default function App() {
             </Routes>
           </div>
           <BottomNav />
-          <Fab />
           <GlobalSearch />
           <Hotkeys />
         </div>

@@ -8,7 +8,7 @@ interface AppState {
 
   topics: Topic[]; tasks: Task[]; habits: Habit[]; ideas: Idea[];
   finances: FinanceEntry[]; dates: ImportantDate[]; workouts: Workout[];
-  templates: Template[];
+  templates: Template[]; workoutTemplates: WorkoutTemplate[];
 
   addTopic: (t: Omit<Topic, 'id'>) => void;
   updateTopic: (id: string, patch: Partial<Topic>) => void;
@@ -54,6 +54,9 @@ interface AppState {
   deleteWorkout: (id: string) => void;
 
   addTemplate: (t: Omit<Template, 'id'>) => void;
+  addWorkoutTemplate: (t: Omit<WorkoutTemplate, 'id'>) => void;
+  deleteWorkoutTemplate: (id: string) => void;
+  applyWorkoutTemplate: (id: string, date: string) => void;
   deleteTemplate: (id: string) => void;
   applyTemplate: (id: string, date?: string) => void;
 }
@@ -78,7 +81,7 @@ export const useStore = create<AppState>()(
       },
 
       topics: [], tasks: [], habits: [], ideas: [],
-      finances: [], dates: [], workouts: [], templates: [],
+      finances: [], dates: [], workouts: [], templates: [], workoutTemplates: [],
 
       addTopic: (t) => set((s) => ({ topics: [...s.topics, { ...t, id: uid() }] })),
       updateTopic: (id, patch) =>

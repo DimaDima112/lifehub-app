@@ -8,29 +8,48 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Скрыть скроллбары, но оставить прокрутку */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Тёмная тема */
-html.dark body { background: #0f172a; color: #e2e8f0; }
-html.dark .bg-white { background: #1e293b; }
-html.dark .bg-gray-50 { background: #1e293b; }
-html.dark .bg-gray-100 { background: #334155; }
-html.dark .bg-gray-200 { background: #334155; }
-html.dark .border { border-color: #334155; }
-html.dark .text-gray-500 { color: #94a3b8; }
-html.dark .text-gray-600 { color: #cbd5e1; }
-html.dark .text-gray-700 { color: #e2e8f0; }
-html.dark .bg-blue-50 { background: #1e3a8a; }
-html.dark input, html.dark textarea, html.dark select {
-  background: #1e293b; color: #e2e8f0; border-color: #334155;
-}
-
-/* Акцент */
+/* --- СВЕТЛАЯ ТЕМА --- */
 :root { --accent: #2563eb; }
 html.accent-green { --accent: #16a34a; }
 html.accent-purple { --accent: #9333ea; }
 html.accent-orange { --accent: #ea580c; }
 .bg-blue-600 { background: var(--accent) !important; }
 .text-blue-600 { color: var(--accent) !important; }
+
+/* --- ТЕМНАЯ ТЕМА --- */
+html.dark body { background: #0f172a; color: #e2e8f0; }
+
+/* Фоны карточек */
+html.dark .bg-white { background: #1e293b; }
+html.dark .bg-gray-50 { background: #1e293b; }
+html.dark .bg-gray-100 { background: #334155; }
+html.dark .bg-gray-200 { background: #334155; }
+
+/* Границы */
+html.dark .border { border-color: #334155; }
+html.dark .border-gray-100 { border-color: #334155; }
+html.dark .border-gray-200 { border-color: #334155; }
+
+/* Текст */
+html.dark .text-gray-500 { color: #94a3b8; }
+html.dark .text-gray-600 { color: #cbd5e1; }
+html.dark .text-gray-700 { color: #e2e8f0; }
+html.dark .text-gray-800 { color: #f1f5f9; }
+
+/* Поля ввода */
+html.dark input, html.dark textarea, html.dark select {
+  background: #1e293b; 
+  color: #e2e8f0; 
+  border-color: #475569;
+}
+
+/* Цветные бейджи тем в темноте (делаем чуть темнее, чтобы не резали глаз) */
+html.dark .bg-blue-100 { background: #1e3a8a; color: #bfdbfe; }
+html.dark .bg-green-100 { background: #14532d; color: #bbf7d0; }
+html.dark .bg-red-100 { background: #7f1d1d; color: #fecaca; }
+html.dark .bg-yellow-100 { background: #78350f; color: #fef08a; }
+html.dark .bg-purple-100 { background: #4c1d95; color: #e9d5ff; }
+html.dark .bg-orange-100 { background: #7c2d12; color: #fed7aa; }
