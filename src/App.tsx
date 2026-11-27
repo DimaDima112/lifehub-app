@@ -12,6 +12,7 @@ import Templates from './modules/templates';
 import Settings from './modules/settings';
 import More from './modules/more';
 import Habits from './modules/habits';
+import Analytics from './modules/analytics';
 import BottomNav from './components/BottomNav';
 import ReminderBanner from './components/ReminderBanner';
 import Toast from './components/Toast';
@@ -43,6 +44,7 @@ export default function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/more" element={<More />} />
               <Route path="/habits" element={<Habits />} />
+              <Route path="/analytics" element={<Analytics />} />
             </Routes>
           </div>
           <BottomNav />

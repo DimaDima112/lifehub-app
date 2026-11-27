@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Topic, Task, Habit, Idea, FinanceEntry, ImportantDate, Workout, Attachment, Template, TemplateItem, WorkoutTemplate } from './types';
+import type { Topic, Task, Habit, Idea, FinanceEntry, ImportantDate, Workout, Attachment, Template, TemplateItem, WorkoutTemplate, Mood } from './types';
 
 interface AppState {
   theme: 'light' | 'dark';
@@ -8,7 +8,7 @@ interface AppState {
 
   topics: Topic[]; tasks: Task[]; habits: Habit[]; ideas: Idea[];
   finances: FinanceEntry[]; dates: ImportantDate[]; workouts: Workout[];
-  templates: Template[]; workoutTemplates: WorkoutTemplate[];
+  templates: Template[]; workoutTemplates: WorkoutTemplate[]; moods: Record<string, Mood>;
 
   addTopic: (t: Omit<Topic, 'id'>) => void;
   updateTopic: (id: string, patch: Partial<Topic>) => void;
@@ -61,6 +61,7 @@ interface AppState {
   deleteWorkoutTemplate: (id: string) => void;
   updateWorkoutTemplate: (id: string, patch: Partial<WorkoutTemplate>) => void;
   applyWorkoutTemplate: (id: string, date: string) => void;
+  setMood: (date: string, mood: Mood) => void;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -83,7 +84,7 @@ export const useStore = create<AppState>()(
       },
 
       topics: [], tasks: [], habits: [], ideas: [],
-      finances: [], dates: [], workouts: [], templates: [], workoutTemplates: [],
+      finances: [], dates: [], workouts: [], templates: [], workoutTemplates: [], moods: {},
 
       addTopic: (t) => set((s) => ({ topics: [...s.topics, { ...t, id: uid() }] })),
       updateTopic: (id, patch) =>
@@ -230,6 +231,8 @@ export const useStore = create<AppState>()(
           id: uid(), date, slot: 'day', plan: ex.name, sets: ex.sets, reps: ex.reps, done: false,
         }));
         set((s) => ({ workouts: [...s.workouts, ...newWorkouts] }));
+      },
+      setMood: (date, mood) => set((s) => ({ moods: { ...s.moods, [date]: mood } })),
       },
     }),
     { name: 'lifehub-v12' }

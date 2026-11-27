@@ -104,3 +104,5 @@ export interface WorkoutTemplate {
   name: string;
   exercises: WorkoutExercise[];
 }
+
+export type Mood = 'sad' | 'neutral' | 'happy' | null;

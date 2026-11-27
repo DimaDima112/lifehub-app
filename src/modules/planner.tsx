@@ -4,6 +4,8 @@ import { useStore } from '../store/appStore';
 import { colorMap } from '../utils/colors';
 import type { Task } from '../store/types';
 import HabitChart from '../components/HabitChart';
+import VoiceInput from '../components/VoiceInput';
+import ProgressBar from '../components/ProgressBar';
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -14,7 +16,7 @@ export default function Planner() {
 
   const { 
     topics, tasks, toggleTask, habits, logHabit, workouts, toggleWorkout, 
-    updateTask, deleteTask, addQuickTask, addSubtask, deleteSubtask
+    updateTask, deleteTask, addQuickTask, addSubtask, deleteSubtask, moods, setMood
   } = useStore();
   
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -118,7 +120,10 @@ export default function Planner() {
           const count = h.logs[date] ?? 0;
           return (
             <div key={h.id} className="flex items-center gap-2 p-2 neo-raised">
-              <span className="flex-1 font-medium text-sm" style={{ color: c.hex }}>{h.name}</span>
+              <span className="flex-1 font-medium text-sm" style={{ color: c.hex }}>
+                {h.name}
+                {getStreak(h) > 1 && <span className="ml-2 text-xs font-bold text-orange-500 bg-orange-100 px-1.5 py-0.5 rounded">🔥 {getStreak(h)}</span>}
+              </span>
               <button className="w-8 h-8 neo-btn rounded-md flex items-center justify-center text-lg" onClick={() => logHabit(h.id, date, -1)}>−</button>
               <span className="w-6 text-center font-bold text-sm">{count}</span>
               <button className="w-8 h-8 neo-btn rounded-md flex items-center justify-center text-lg" onClick={() => logHabit(h.id, date, 1)}>+</button>
@@ -176,7 +181,10 @@ export default function Planner() {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowAdd(false)}>
           <div className="neo-raised w-full max-w-sm rounded-xl p-5" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold mb-4 text-main">Новая задача на {date}</h3>
-            <input autoFocus className="w-full neo-inset px-3 py-2 text-sm mb-3 bg-white dark:bg-slate-800" placeholder="Название задачи..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddTask()} />
+            <div className="flex gap-2 mb-3">
+              <input autoFocus className="flex-1 neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Название задачи..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddTask()} />
+              <VoiceInput onResult={(text) => setNewTitle(text)} />
+            </div>
             <select className="w-full neo-inset px-3 py-2 text-sm mb-4 bg-white dark:bg-slate-800" value={newTopicId} onChange={(e) => setNewTopicId(e.target.value)}>
               <option value="">Выберите тему...</option>
               {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
