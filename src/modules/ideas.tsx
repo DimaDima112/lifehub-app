@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useStore } from '../store/appStore';
-import { colorMap } from '../utils/colors';
 import IdeaCard from '../components/IdeaCard';
 
 export default function Ideas() {
