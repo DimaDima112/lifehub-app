@@ -8,7 +8,8 @@ interface AppState {
 
   topics: Topic[]; tasks: Task[]; habits: Habit[]; ideas: Idea[];
   finances: FinanceEntry[]; dates: ImportantDate[]; workouts: Workout[];
-  templates: Template[]; workoutTemplates: WorkoutTemplate[]; moods: Record<string, Mood>;
+  templates: Template[]; workoutTemplates: WorkoutTemplate[];
+  moods: Record<string, Mood>;
 
   addTopic: (t: Omit<Topic, 'id'>) => void;
   updateTopic: (id: string, patch: Partial<Topic>) => void;
@@ -61,6 +62,7 @@ interface AppState {
   deleteWorkoutTemplate: (id: string) => void;
   updateWorkoutTemplate: (id: string, patch: Partial<WorkoutTemplate>) => void;
   applyWorkoutTemplate: (id: string, date: string) => void;
+
   setMood: (date: string, mood: Mood) => void;
 }
 
@@ -224,6 +226,7 @@ export const useStore = create<AppState>()(
       addWorkoutTemplate: (t) => set((s) => ({ workoutTemplates: [...s.workoutTemplates, { ...t, id: uid() }] })),
       deleteWorkoutTemplate: (id) => set((s) => ({ workoutTemplates: s.workoutTemplates.filter((t) => t.id !== id) })),
       updateWorkoutTemplate: (id, patch) => set((s) => ({ workoutTemplates: s.workoutTemplates.map((t) => (t.id === id ? { ...t, ...patch } : t)) })),
+      
       applyWorkoutTemplate: (id, date) => {
         const tpl = get().workoutTemplates.find((t) => t.id === id);
         if (!tpl) return;
@@ -232,9 +235,9 @@ export const useStore = create<AppState>()(
         }));
         set((s) => ({ workouts: [...s.workouts, ...newWorkouts] }));
       },
+      
       setMood: (date, mood) => set((s) => ({ moods: { ...s.moods, [date]: mood } })),
-      },
     }),
-    { name: 'lifehub-v12' }
+    { name: 'lifehub-v13' }
   )
 );
