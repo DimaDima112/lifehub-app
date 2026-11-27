@@ -12,10 +12,18 @@ export default function Planner() {
   const navigate = useNavigate();
   const date = urlDate ?? today();
 
-  const { topics, tasks, toggleTask, habits, logHabit, workouts, toggleWorkout, updateTask, deleteTask } = useStore();
+  const { 
+    topics, tasks, toggleTask, habits, logHabit, workouts, toggleWorkout, 
+    updateTask, deleteTask, addQuickTask 
+  } = useStore();
+  
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  
+  // Стейты для добавления новой задачи
+  const [showAdd, setShowAdd] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newTopicId, setNewTopicId] = useState(topics[0]?.id ?? '');
 
-  // Фильтруем задачи и тренировки на выбранный день
   const dayTasks = tasks.filter((t) => !t.dueDate || t.dueDate === date);
   const dayWorkouts = workouts.filter((w) => w.date === date);
 
@@ -28,8 +36,15 @@ export default function Planner() {
     navigate(`/planner/${d.toISOString().slice(0, 10)}`);
   };
 
+  const handleAddTask = () => {
+    if (!newTitle.trim() || !newTopicId) return;
+    addQuickTask(newTopicId, newTitle.trim(), date);
+    setNewTitle('');
+    setShowAdd(false);
+  };
+
   return (
-    <div className="p-3">
+    <div className="p-3 pb-24">
       <div className="flex items-center justify-between mb-4">
         <button className="w-10 h-10 flex items-center justify-center neo-btn rounded-lg" onClick={() => shiftDay(-1)}>←</button>
         <div className="text-center">
@@ -43,7 +58,6 @@ export default function Planner() {
         <button className="text-xs neo-btn px-3 py-1 text-muted" onClick={() => navigate('/planner')}>на сегодня</button>
       </div>
 
-      {/* БЛОК ПРИВЫЧЕК (только отметки) */}
       <h2 className="font-bold text-sm mb-2 text-main uppercase tracking-wide">Привычки</h2>
       <HabitChart habits={habits} date={date} />
       <div className="space-y-2 mb-6">
@@ -59,10 +73,8 @@ export default function Planner() {
             </div>
           );
         })}
-        {habits.length === 0 && <p className="text-muted text-xs text-center">Добавьте привычки в меню «Ещё»</p>}
       </div>
 
-      {/* БЛОК ЗАДАЧ */}
       <h2 className="font-bold text-sm mb-2 text-main uppercase tracking-wide">Задачи ({activeTasks.length})</h2>
       <div className="space-y-2 mb-6">
         {activeTasks.map((t) => {
@@ -84,7 +96,6 @@ export default function Planner() {
         {activeTasks.length === 0 && <p className="text-muted text-xs text-center py-2">Задач нет</p>}
       </div>
 
-      {/* БЛОК ТРЕНИРОВОК */}
       <h2 className="font-bold text-sm mb-2 text-main uppercase tracking-wide">Тренировки ({activeWorkouts.length})</h2>
       <div className="space-y-2 mb-6">
         {activeWorkouts.map((w) => (
@@ -101,7 +112,44 @@ export default function Planner() {
         {activeWorkouts.length === 0 && <p className="text-muted text-xs text-center py-2">Тренировок нет</p>}
       </div>
 
-      {/* Модалка задачи (осталась без изменений) */}
+      {/* Плавающая кнопка добавления задачи */}
+      <button 
+        onClick={() => setShowAdd(true)}
+        className="fixed bottom-24 right-4 w-14 h-14 rounded-full neo-primary flex items-center justify-center text-2xl font-light shadow-xl z-40 transition-transform active:scale-95"
+      >
+        +
+      </button>
+
+      {/* Модалка добавления задачи */}
+      {showAdd && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowAdd(false)}>
+          <div className="neo-raised w-full max-w-sm rounded-xl p-5" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold mb-4 text-main">Новая задача на {date}</h3>
+            <input 
+              autoFocus
+              className="w-full neo-inset px-3 py-2 text-sm mb-3 bg-white dark:bg-slate-800" 
+              placeholder="Название задачи..." 
+              value={newTitle} 
+              onChange={(e) => setNewTitle(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
+            />
+            <select 
+              className="w-full neo-inset px-3 py-2 text-sm mb-4 bg-white dark:bg-slate-800" 
+              value={newTopicId} 
+              onChange={(e) => setNewTopicId(e.target.value)}
+            >
+              <option value="">Выберите тему...</option>
+              {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+            <div className="flex gap-2">
+              <button className="flex-1 neo-accent py-2 rounded-lg font-bold text-sm" onClick={handleAddTask}>Добавить</button>
+              <button className="flex-1 neo-btn py-2 rounded-lg text-muted text-sm" onClick={() => setShowAdd(false)}>Отмена</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Модалка просмотра задачи (осталась без изменений) */}
       {selectedTask && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-end justify-center" onClick={() => setSelectedTask(null)}>
           <div className="neo-raised w-full max-w-md rounded-t-2xl p-5 max-h-[85vh] flex flex-col rounded-b-none border-b-0" onClick={e => e.stopPropagation()}>
