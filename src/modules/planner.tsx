@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../store/appStore';
 import { colorMap } from '../utils/colors';
-import type { ThemeColor, Task, Workout } from '../store/types';
+import type { Task } from '../store/types';
 import HabitChart from '../components/HabitChart';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -12,41 +12,20 @@ export default function Planner() {
   const navigate = useNavigate();
   const date = urlDate ?? today();
 
-  const { 
-    topics, tasks, toggleTask, habits, addHabit, deleteHabit, logHabit, 
-    workouts, toggleWorkout, updateTask, deleteTask 
-  } = useStore();
-  
-  const [hName, setHName] = useState('');
-  const [hColor, setHColor] = useState<ThemeColor>('blue');
-  const [hCategory, setHCategory] = useState<'mind' | 'strength' | 'endurance' | 'other'>('mind');
+  const { topics, tasks, toggleTask, habits, logHabit, workouts, toggleWorkout, updateTask, deleteTask } = useStore();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  // --- ЛОГИКА СБОРА ДАННЫХ ---
-  // 1. Задачи на этот день
+  // Фильтруем задачи и тренировки на выбранный день
   const dayTasks = tasks.filter((t) => !t.dueDate || t.dueDate === date);
-  // 2. Тренировки на этот день
   const dayWorkouts = workouts.filter((w) => w.date === date);
 
-  // Объединяем в один список для отображения
-  const combinedList = [
-    ...dayTasks.map(t => ({ type: 'task' as const, item: t })),
-    ...dayWorkouts.map(w => ({ type: 'workout' as const, item: w }))
-  ];
-
-  const activeTasks = combinedList.filter(x => !x.item.done);
-  const doneToday = combinedList.filter(x => x.item.done).length;
+  const activeTasks = dayTasks.filter((t) => !t.done);
+  const activeWorkouts = dayWorkouts.filter((w) => !w.done);
 
   const shiftDay = (delta: number) => {
     const d = new Date(date);
     d.setDate(d.getDate() + delta);
     navigate(`/planner/${d.toISOString().slice(0, 10)}`);
-  };
-
-  const submitHabit = () => {
-    if (!hName.trim()) return;
-    addHabit({ name: hName.trim(), category: hCategory, color: hColor, dailyTarget: 1, logs: {} });
-    setHName('');
   };
 
   return (
@@ -64,29 +43,9 @@ export default function Planner() {
         <button className="text-xs neo-btn px-3 py-1 text-muted" onClick={() => navigate('/planner')}>на сегодня</button>
       </div>
 
+      {/* БЛОК ПРИВЫЧЕК (только отметки) */}
       <h2 className="font-bold text-sm mb-2 text-main uppercase tracking-wide">Привычки</h2>
       <HabitChart habits={habits} date={date} />
-
-      <div className="space-y-2 mb-6">
-        <input className="w-full neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Новая привычка"
-          value={hName} onChange={(e) => setHName(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && submitHabit()} />
-        <div className="flex gap-2">
-          <select className="flex-1 neo-inset px-2 py-2 text-sm bg-white dark:bg-slate-800" value={hCategory}
-            onChange={(e) => setHCategory(e.target.value as typeof hCategory)}>
-            <option value="mind">Ум</option>
-            <option value="strength">Сила</option>
-            <option value="endurance">Выносливость</option>
-            <option value="other">Другое</option>
-          </select>
-          <select className="flex-1 neo-inset px-2 py-2 text-sm bg-white dark:bg-slate-800" value={hColor}
-            onChange={(e) => setHColor(e.target.value as ThemeColor)}>
-            {Object.keys(colorMap).map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <button className="neo-accent px-4 rounded-lg text-lg" onClick={submitHabit}>+</button>
-        </div>
-      </div>
-
       <div className="space-y-2 mb-6">
         {habits.map((h) => {
           const c = colorMap[h.color];
@@ -97,53 +56,52 @@ export default function Planner() {
               <button className="w-8 h-8 neo-btn rounded-md flex items-center justify-center text-lg" onClick={() => logHabit(h.id, date, -1)}>−</button>
               <span className="w-6 text-center font-bold text-sm">{count}</span>
               <button className="w-8 h-8 neo-btn rounded-md flex items-center justify-center text-lg" onClick={() => logHabit(h.id, date, 1)}>+</button>
-              <button className="text-muted hover:text-red-500 text-xs ml-1 w-6" onClick={() => deleteHabit(h.id)}>✕</button>
             </div>
           );
         })}
+        {habits.length === 0 && <p className="text-muted text-xs text-center">Добавьте привычки в меню «Ещё»</p>}
       </div>
 
-      <h2 className="font-bold text-sm mb-2 text-main uppercase tracking-wide">Задачи и Тренировки ({doneToday}/{combinedList.length})</h2>
-      <div className="space-y-2">
-        {activeTasks.length === 0 && combinedList.length > 0 && <p className="text-green-600 text-sm text-center font-medium py-4">Все дела выполнены 🎉</p>}
-        
-        {activeTasks.map(({ type, item }) => {
-          if (type === 'task') {
-            const t = item as Task;
-            const topic = topics.find((tp) => tp.id === t.topicId);
-            const c = topic ? colorMap[topic.color] : colorMap.blue;
-            return (
-              <div key={t.id} className="flex items-center gap-3 p-3 neo-raised cursor-pointer" onClick={() => setSelectedTask(t)}>
-                <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
-                  <input type="checkbox" className="w-5 h-5 rounded accent-blue-600 cursor-pointer" onChange={() => toggleTask(t.id)} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-main block truncate">{t.title}</span>
-                  {t.subtasks.length > 0 && <span className="text-[10px] text-muted">{t.subtasks.filter(s=>s.done).length}/{t.subtasks.length} подзадач</span>}
-                </div>
-                {topic && <span className="text-[10px] font-bold px-2 py-1 rounded-md text-white shadow-sm shrink-0" style={{ backgroundColor: c.hex }}>{topic.name}</span>}
+      {/* БЛОК ЗАДАЧ */}
+      <h2 className="font-bold text-sm mb-2 text-main uppercase tracking-wide">Задачи ({activeTasks.length})</h2>
+      <div className="space-y-2 mb-6">
+        {activeTasks.map((t) => {
+          const topic = topics.find((tp) => tp.id === t.topicId);
+          const c = topic ? colorMap[topic.color] : colorMap.blue;
+          return (
+            <div key={t.id} className="flex items-center gap-3 p-3 neo-raised cursor-pointer" onClick={() => setSelectedTask(t)}>
+              <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
+                <input type="checkbox" className="w-5 h-5 rounded accent-blue-600 cursor-pointer" onChange={() => toggleTask(t.id)} />
               </div>
-            );
-          } else {
-            const w = item as Workout;
-            return (
-              <div key={w.id} className="flex items-center gap-3 p-3 neo-raised border-l-4 border-l-orange-500">
-                <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
-                  <input type="checkbox" className="w-5 h-5 rounded accent-orange-500 cursor-pointer" onChange={() => toggleWorkout(w.id)} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium text-main block truncate">{w.plan}</span>
-                  {(w.sets || w.reps) && <span className="text-[10px] text-muted">{w.sets} подх. × {w.reps} повт.</span>}
-                </div>
-                <span className="text-[10px] font-bold px-2 py-1 rounded-md bg-orange-100 text-orange-700 shrink-0">💪 Спорт</span>
+              <div className="flex-1 min-w-0">
+                <span className="text-sm font-medium text-main block truncate">{t.title}</span>
+                {t.subtasks.length > 0 && <span className="text-[10px] text-muted">{t.subtasks.filter(s=>s.done).length}/{t.subtasks.length} подзадач</span>}
               </div>
-            );
-          }
+              {topic && <span className="text-[10px] font-bold px-2 py-1 rounded-md text-white shadow-sm shrink-0" style={{ backgroundColor: c.hex }}>{topic.name}</span>}
+            </div>
+          );
         })}
-        {combinedList.length === 0 && <p className="text-muted text-sm text-center py-4">Задач и тренировок на этот день нет</p>}
+        {activeTasks.length === 0 && <p className="text-muted text-xs text-center py-2">Задач нет</p>}
       </div>
 
-      {/* Модалка задачи (без изменений) */}
+      {/* БЛОК ТРЕНИРОВОК */}
+      <h2 className="font-bold text-sm mb-2 text-main uppercase tracking-wide">Тренировки ({activeWorkouts.length})</h2>
+      <div className="space-y-2 mb-6">
+        {activeWorkouts.map((w) => (
+          <div key={w.id} className="flex items-center gap-3 p-3 neo-raised border-l-4 border-l-orange-500">
+            <div onClick={(e) => e.stopPropagation()} className="flex items-center justify-center">
+              <input type="checkbox" className="w-5 h-5 rounded accent-orange-500 cursor-pointer" onChange={() => toggleWorkout(w.id)} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-medium text-main block truncate">{w.plan}</span>
+              {(w.sets || w.reps) && <span className="text-[10px] text-muted">{w.sets} подх. × {w.reps} повт.</span>}
+            </div>
+          </div>
+        ))}
+        {activeWorkouts.length === 0 && <p className="text-muted text-xs text-center py-2">Тренировок нет</p>}
+      </div>
+
+      {/* Модалка задачи (осталась без изменений) */}
       {selectedTask && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-end justify-center" onClick={() => setSelectedTask(null)}>
           <div className="neo-raised w-full max-w-md rounded-t-2xl p-5 max-h-[85vh] flex flex-col rounded-b-none border-b-0" onClick={e => e.stopPropagation()}>
