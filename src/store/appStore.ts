@@ -59,6 +59,7 @@ interface AppState {
 
   addWorkoutTemplate: (t: Omit<WorkoutTemplate, 'id'>) => void;
   deleteWorkoutTemplate: (id: string) => void;
+  updateWorkoutTemplate: (id: string, patch: Partial<WorkoutTemplate>) => void;
   applyWorkoutTemplate: (id: string, date: string) => void;
 }
 
@@ -221,6 +222,7 @@ export const useStore = create<AppState>()(
 
       addWorkoutTemplate: (t) => set((s) => ({ workoutTemplates: [...s.workoutTemplates, { ...t, id: uid() }] })),
       deleteWorkoutTemplate: (id) => set((s) => ({ workoutTemplates: s.workoutTemplates.filter((t) => t.id !== id) })),
+      updateWorkoutTemplate: (id, patch) => set((s) => ({ workoutTemplates: s.workoutTemplates.map((t) => (t.id === id ? { ...t, ...patch } : t)) })),
       applyWorkoutTemplate: (id, date) => {
         const tpl = get().workoutTemplates.find((t) => t.id === id);
         if (!tpl) return;
