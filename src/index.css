@@ -2,102 +2,140 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* --- БАЗОВЫЕ НАСТРОЙКИ --- */
+/* =========================================
+   1. ОСНОВНЫЕ ПЕРЕМЕННЫЕ (СВЕТЛАЯ ТЕМА)
+   ========================================= */
+:root {
+  --bg-base: #eef0f4;        /* Фон всего приложения */
+  --bg-surface: #ffffff;     /* Карточки, панели */
+  --bg-inset: #e2e6ec;       /* Вдавленные поля */
+  --border-color: #d1d5db;   /* Границы */
+  --border-highlight: #ffffff; /* Светлый блик для объема */
+  
+  --text-main: #111827;      /* Основной текст (почти черный) */
+  --text-muted: #6b7280;     /* Второстепенный текст */
+  --text-invert: #ffffff;    /* Текст на темных кнопках */
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* =========================================
+   2. ОСНОВНЫЕ ПЕРЕМЕННЫЕ (ТЕМНАЯ ТЕМА)
+   ========================================= */
+html.dark {
+  --bg-base: #121418;        /* Очень темный фон */
+  --bg-surface: #1a1d24;     /* Карточки (чуть светлее фона) */
+  --bg-inset: #0d0f12;       /* Глубокие вдавленные поля */
+  --border-color: #2d333b;   
+  --border-highlight: #363d47; /* Блик для объема в темноте */
+  
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-inset: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================================
+   3. БАЗА И УТИЛИТЫ
+   ========================================= */
 html, body { 
-  transition: background 0.25s, color 0.25s;
-  overscroll-behavior: none;
-  -webkit-tap-highlight-color: transparent;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  transition: background 0.2s ease, color 0.2s ease;
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* --- СВЕТЛАЯ ТЕМА (Neo-Skeuo) --- */
-:root { 
-  --bg-main: #f2f4f7;
-  --surface-raised: #ffffff;
-  --surface-inset: #e9ecef;
-  --border-color: #cbd5e1;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --accent: #3b82f6; 
-}
-
-body { background-color: var(--bg-main); color: var(--text-main); }
-
-/* --- ТЕМНАЯ ТЕМА (Neo-Skeuo) --- */
-html.dark { 
-  --bg-main: #0f172a;
-  --surface-raised: #1e293b;
-  --surface-inset: #0b1120;
-  --border-color: #334155;
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-}
-html.dark body { background-color: var(--bg-main); color: var(--text-main); }
-
-/* --- КОМПОНЕНТЫ ИЗ РЕФЕРЕНСА --- */
-
-/* 1. Base Surface (Базовый фон) */
-.neo-base { background-color: var(--bg-main); }
-
-/* 2. Raised Surface (Карточки, приподнятые элементы) */
-.neo-raised {
-  background-color: var(--surface-raised);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04);
-}
-html.dark .neo-raised {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
-}
-
-/* 3. Inset Surface (Поля ввода, вдавленные области) */
-.neo-inset {
-  background-color: var(--surface-inset);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-}
-html.dark .neo-inset {
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-}
-
-/* 4. Pressed Surface / Buttons (Кнопки) */
-.neo-button {
-  background-color: var(--surface-raised);
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  transition: all 0.1s ease;
-}
-.neo-button:active {
-  background-color: var(--surface-inset);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-  transform: translateY(1px);
-}
-
-/* 5. Primary Button (Акцентная кнопка) */
-.neo-primary {
-  background-color: var(--accent);
-  color: white;
-  border: 1px solid #2563eb;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(37,99,235,0.2);
-  transition: all 0.1s ease;
-}
-.neo-primary:active {
-  background-color: #2563eb;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-}
-
-/* Утилиты для текста */
 .text-main { color: var(--text-main); }
 .text-muted { color: var(--text-muted); }
 
-/* Сброс стандартных стилей инпутов */
-input, textarea, select {
-  background: transparent;
-  outline: none;
+/* =========================================
+   4. КОМПОНЕНТЫ UI-КИТА
+   ========================================= */
+
+/* Raised Surface (Карточки) - двойная тень и светлая рамка сверху */
+.neo-raised {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-top-color: var(--border-highlight);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
 }
+
+/* Inset Surface (Поля ввода) - глубокая внутренняя тень */
+.neo-inset {
+  background-color: var(--bg-inset);
+  border: 1px solid var(--border-color);
+  border-bottom-color: var(--border-highlight);
+  border-radius: 8px;
+  box-shadow: var(--shadow-inset);
+  color: var(--text-main);
+  transition: all 0.15s ease;
+}
+.neo-inset:focus {
+  border-color: #6b7280;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 2px var(--bg-base), 0 0 0 3px #6b7280;
+}
+
+/* Default Button (Кнопки) */
+.neo-btn {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-bottom: 2px solid var(--border-color); /* Утолщенная тень снизу */
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-main);
+  font-weight: 500;
+  transition: all 0.1s ease;
+}
+.neo-btn:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Primary Button (Акцентные) */
+.neo-primary {
+  background-color: var(--text-main); /* Темная кнопка (как в референсе) */
+  color: var(--text-invert);
+  border: 1px solid transparent;
+  border-bottom: 2px solid rgba(0,0,0,0.3);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+  transition: all 0.1s ease;
+}
+html.dark .neo-primary {
+  background-color: #2563eb;
+  color: white;
+}
+.neo-primary:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+  opacity: 0.9;
+}
+
+/* Акцентная кнопка (Синяя) */
+.neo-accent {
+  background-color: #2563eb;
+  color: white;
+  border: 1px solid #1d4ed8;
+  border-bottom: 2px solid #1e3a8a;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(37,99,235,0.3);
+}
+.neo-accent:active {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+}
+
+/* Убираем дефолтный outline */
+input, textarea, select, button { outline: none; }

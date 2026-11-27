@@ -16,28 +16,20 @@ export default function Topics() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-main">Мои темы</h1>
+      <h1 className="text-2xl font-bold mb-4 text-main tracking-tight">Мои темы</h1>
 
       <div className="flex gap-2 mb-6">
         <input
-          className="flex-1 neo-inset px-4 py-3 text-sm placeholder:text-[var(--text-muted)]"
-          placeholder="Название темы (например, Авто)"
+          className="flex-1 neo-inset px-4 py-3 text-sm"
+          placeholder="Название темы"
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && submit()}
         />
-        <select
-          className="neo-inset px-2 text-sm"
-          value={color}
-          onChange={(e) => setColor(e.target.value as ThemeColor)}
-        >
-          {Object.keys(colorMap).map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
+        <select className="neo-inset px-3 text-sm" value={color} onChange={(e) => setColor(e.target.value as ThemeColor)}>
+          {Object.keys(colorMap).map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <button className="neo-primary px-4 font-bold text-lg" onClick={submit}>
-          +
-        </button>
+        <button className="neo-accent px-5 text-xl font-bold rounded-lg" onClick={submit}>+</button>
       </div>
 
       <div className="space-y-3">
@@ -46,24 +38,17 @@ export default function Topics() {
           const done = total.filter((x) => x.done).length;
           const c = colorMap[t.color];
           return (
-            <div key={t.id} className="flex items-center justify-between p-4 neo-raised">
-              <a href={`#/topic/${t.id}`} className="font-semibold flex-1 min-w-0 pr-2 text-main flex items-center gap-2">
-                <span className={`w-3 h-3 rounded-full`} style={{ backgroundColor: c.hex }} />
+            <div key={t.id} className="flex items-center justify-between p-3 neo-raised">
+              <a href={`#/topic/${t.id}`} className="font-semibold flex-1 min-w-0 pr-2 text-main flex items-center gap-3">
+                <span className={`w-3 h-3 rounded-full shadow-sm`} style={{ backgroundColor: c.hex }} />
                 <span className="truncate">{t.name}</span>
-                <span className="ml-1 text-xs font-normal text-muted">({done}/{total.length})</span>
+                <span className="ml-1 text-xs font-medium text-muted bg-[var(--bg-inset)] px-1.5 py-0.5 rounded">{done}/{total.length}</span>
               </a>
-              <button
-                className="text-red-500 text-sm p-2 neo-button"
-                onClick={() => confirm(`Удалить тему "${t.name}"?`) && deleteTopic(t.id)}
-              >
-                ✕
-              </button>
+              <button className="text-muted hover:text-red-500 w-8 h-8 flex items-center justify-center neo-btn rounded-md" onClick={() => confirm(`Удалить тему?`) && deleteTopic(t.id)}>✕</button>
             </div>
           );
         })}
-        {topics.length === 0 && (
-          <p className="text-muted text-center py-8 text-sm">Тем пока нет. Создайте первую.</p>
-        )}
+        {topics.length === 0 && <p className="text-muted text-center py-8 text-sm">Тем пока нет.</p>}
       </div>
     </div>
   );
