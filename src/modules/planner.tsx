@@ -208,10 +208,14 @@ export default function Planner() {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60] flex items-center justify-center p-4" onClick={() => setShowAdd(false)}>
           <div className="neo-raised w-full max-w-sm rounded-xl p-5" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-bold mb-4 text-main">Новая задача на {date}</h3>
-            <div className="flex gap-2 mb-3">
-              <input autoFocus className="flex-1 min-w-0 neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Название задачи..." value={newTitle} onChange={(e) => setNewTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAddTask()} />
-              <VoiceInput onResult={(text) => setNewTitle(text)} />
-            </div>
+            <input 
+              autoFocus 
+              className="w-full neo-inset px-3 py-2 text-sm mb-3 bg-white dark:bg-slate-800" 
+              placeholder="Название задачи..." 
+              value={newTitle} 
+              onChange={(e) => setNewTitle(e.target.value)} 
+              onKeyDown={(e) => e.key === 'Enter' && handleAddTask()} 
+            />
             <select className="w-full neo-inset px-3 py-2 text-sm mb-4 bg-white dark:bg-slate-800" value={newTopicId} onChange={(e) => setNewTopicId(e.target.value)}>
               <option value="">Выберите тему...</option>
               {topics.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
