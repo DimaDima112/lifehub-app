@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store/appStore';
 import IdeaCard from '../components/IdeaCard';
+import VoiceInput from '../components/VoiceInput';
 
 export default function Ideas() {
   const { topics, ideas, addIdea } = useStore();
@@ -33,7 +34,10 @@ export default function Ideas() {
         <>
           <div className="neo-inset p-4 mb-5 space-y-3">
             <p className="text-sm font-bold text-main uppercase tracking-wide">Новая идея</p>
-            <input className="w-full neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Заголовок" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <div className="flex gap-2">
+              <input className="flex-1 min-w-0 neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Заголовок" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <VoiceInput onResult={(text) => setTitle(text)} />
+            </div>
             <textarea className="w-full neo-inset px-3 py-2 text-sm bg-white dark:bg-slate-800" placeholder="Описание" rows={2} value={desc} onChange={(e) => setDesc(e.target.value)} />
             <div className="flex gap-2">
               <select className="flex-1 neo-inset px-2 py-2 text-sm bg-white dark:bg-slate-800" value={topicId} onChange={(e) => setTopicId(e.target.value)}>

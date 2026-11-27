@@ -4,7 +4,6 @@ import { useStore } from '../store/appStore';
 import { colorMap } from '../utils/colors';
 import type { Task } from '../store/types';
 import HabitChart from '../components/HabitChart';
-import VoiceInput from '../components/VoiceInput';
 import ProgressBar from '../components/ProgressBar';
 
 const today = () => new Date().toISOString().slice(0, 10);
