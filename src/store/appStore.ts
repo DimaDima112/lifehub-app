@@ -227,7 +227,7 @@ export const useStore = create<AppState>()(
         const tpl = get().workoutTemplates.find((t) => t.id === id);
         if (!tpl) return;
         const newWorkouts: Workout[] = tpl.exercises.map((ex) => ({
-          id: uid(), date, slot: 'day', plan: ex, done: false,
+          id: uid(), date, slot: 'day', plan: ex.name, sets: ex.sets, reps: ex.reps, done: false,
         }));
         set((s) => ({ workouts: [...s.workouts, ...newWorkouts] }));
       },
