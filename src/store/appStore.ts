@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Topic, Task, Habit, Idea, FinanceEntry, ImportantDate, Workout, Attachment, Template, TemplateItem } from './types';
+import type { Topic, Task, Habit, Idea, FinanceEntry, ImportantDate, Workout, Attachment, Template, TemplateItem, WorkoutTemplate } from './types';
 
 interface AppState {
   theme: 'light' | 'dark';
@@ -54,11 +54,12 @@ interface AppState {
   deleteWorkout: (id: string) => void;
 
   addTemplate: (t: Omit<Template, 'id'>) => void;
+  deleteTemplate: (id: string) => void;
+  applyTemplate: (id: string, date?: string) => void;
+
   addWorkoutTemplate: (t: Omit<WorkoutTemplate, 'id'>) => void;
   deleteWorkoutTemplate: (id: string) => void;
   applyWorkoutTemplate: (id: string, date: string) => void;
-  deleteTemplate: (id: string) => void;
-  applyTemplate: (id: string, date?: string) => void;
 }
 
 const uid = () => Math.random().toString(36).slice(2, 10);
@@ -217,7 +218,18 @@ export const useStore = create<AppState>()(
         }));
         set((s) => ({ tasks: [...s.tasks, ...newTasks] }));
       },
+
+      addWorkoutTemplate: (t) => set((s) => ({ workoutTemplates: [...s.workoutTemplates, { ...t, id: uid() }] })),
+      deleteWorkoutTemplate: (id) => set((s) => ({ workoutTemplates: s.workoutTemplates.filter((t) => t.id !== id) })),
+      applyWorkoutTemplate: (id, date) => {
+        const tpl = get().workoutTemplates.find((t) => t.id === id);
+        if (!tpl) return;
+        const newWorkouts: Workout[] = tpl.exercises.map((ex) => ({
+          id: uid(), date, slot: 'day', plan: ex, done: false,
+        }));
+        set((s) => ({ workouts: [...s.workouts, ...newWorkouts] }));
+      },
     }),
-    { name: 'lifehub-v11' }
+    { name: 'lifehub-v12' }
   )
 );
