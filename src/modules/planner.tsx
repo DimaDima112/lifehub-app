@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../store/appStore';
 import { colorMap } from '../utils/colors';
-import type { Task, ThemeColor } from '../store/types';
+import type { Task } from '../store/types';
 import HabitChart from '../components/HabitChart';
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -14,7 +14,7 @@ export default function Planner() {
 
   const { 
     topics, tasks, toggleTask, habits, logHabit, workouts, toggleWorkout, 
-    updateTask, deleteTask, addQuickTask, addSubtask, toggleSubtask, deleteSubtask
+    updateTask, deleteTask, addQuickTask, addSubtask, deleteSubtask
   } = useStore();
   
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
